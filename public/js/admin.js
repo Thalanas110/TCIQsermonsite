@@ -7,6 +7,8 @@ class AdminDashboard {
         this.comments = [];
         this.bannedUsers = [];
         this.churchInfo = {};
+        this.announcements = [];
+        this.galleryItems = [];
         this.overviewChart = null;
         this.activityChart = null;
         this.init();
@@ -71,6 +73,38 @@ class AdminDashboard {
         if (churchInfoForm) {
             churchInfoForm.addEventListener('submit', (e) => this.handleChurchInfoSubmit(e));
         }
+
+        // Announcements management
+        const addAnnouncementButton = document.getElementById('addAnnouncementButton');
+        if (addAnnouncementButton) {
+            addAnnouncementButton.addEventListener('click', () => this.showAnnouncementForm());
+        }
+
+        const cancelAnnouncementForm = document.getElementById('cancelAnnouncementForm');
+        if (cancelAnnouncementForm) {
+            cancelAnnouncementForm.addEventListener('click', () => this.hideAnnouncementForm());
+        }
+
+        const announcementForm = document.getElementById('announcementForm');
+        if (announcementForm) {
+            announcementForm.addEventListener('submit', (e) => this.handleAnnouncementSubmit(e));
+        }
+
+        // Gallery management
+        const addGalleryButton = document.getElementById('addGalleryButton');
+        if (addGalleryButton) {
+            addGalleryButton.addEventListener('click', () => this.showGalleryForm());
+        }
+
+        const cancelGalleryForm = document.getElementById('cancelGalleryForm');
+        if (cancelGalleryForm) {
+            cancelGalleryForm.addEventListener('click', () => this.hideGalleryForm());
+        }
+
+        const galleryForm = document.getElementById('galleryForm');
+        if (galleryForm) {
+            galleryForm.addEventListener('submit', (e) => this.handleGallerySubmit(e));
+        }
     }
 
     async checkAuthStatus() {
@@ -97,12 +131,16 @@ class AdminDashboard {
     async handleLogin(e) {
         e.preventDefault();
         
-        const username = document.getElementById('username').value;
+        const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
         const loginError = document.getElementById('loginError');
         const submitButton = e.target.querySelector('button[type="submit"]');
         
+        // Clear any previous error
         loginError.textContent = '';
+        loginError.style.display = 'none';
+        
+        // Show loading state
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
         submitButton.disabled = true;
 
@@ -112,7 +150,11 @@ class AdminDashboard {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ 
+                    username: username,
+                    password: password 
+                }),
+                credentials: 'include' // Important for session cookie
             });
 
             const data = await response.json();
@@ -172,7 +214,9 @@ class AdminDashboard {
             this.loadVideos(),
             this.loadComments(),
             this.loadBannedUsers(),
-            this.loadChurchInfo()
+            this.loadChurchInfo(),
+            this.loadAnnouncements(),
+            this.loadGallery()
         ]);
     }
 
@@ -189,6 +233,12 @@ class AdminDashboard {
                 break;
             case 'bans':
                 await this.loadBannedUsers();
+                break;
+            case 'announcements':
+                await this.loadAnnouncements();
+                break;
+            case 'gallery':
+                await this.loadGallery();
                 break;
             case 'church-info':
                 await this.loadChurchInfo();
@@ -829,6 +879,341 @@ class AdminDashboard {
                     }
                 }
             }
+        });
+    }
+
+    // Announcements Management
+    async loadAnnouncements() {
+        const announcementsList = document.getElementById('announcementsList');
+        
+        announcementsList.innerHTML = `
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading announcements...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch('/api/announcements/all');
+            if (!response.ok) throw new Error('Failed to fetch announcements');
+            
+            this.announcements = await response.json();
+            this.renderAnnouncementsList();
+        } catch (error) {
+            console.error('Error loading announcements:', error);
+            announcementsList.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load announcements.</p>
+                </div>
+            `;
+        }
+    }
+
+    renderAnnouncementsList() {
+        const announcementsList = document.getElementById('announcementsList');
+        
+        if (this.announcements.length === 0) {
+            announcementsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bullhorn"></i>
+                    <p>No announcements yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        announcementsList.innerHTML = this.announcements.map(announcement => `
+            <div class="announcement-item">
+                <div class="announcement-header">
+                    <h4>${this.escapeHtml(announcement.title)}</h4>
+                    <div class="announcement-actions">
+                        <button class="edit-button" onclick="adminDashboard.editAnnouncement(${announcement.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="danger-button" onclick="adminDashboard.deleteAnnouncement(${announcement.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="announcement-content">
+                    <p>${this.escapeHtml(announcement.content)}</p>
+                    ${announcement.image_data ? `<img src="data:image/jpeg;base64,${announcement.image_data}" alt="${this.escapeHtml(announcement.title)}" style="max-width: 200px; height: auto; margin-top: 10px; border-radius: 8px;">` : ''}
+                </div>
+                <div class="announcement-meta">
+                    <span>Created: ${this.formatDate(announcement.created_at)}</span>
+                    <span class="status ${announcement.is_active ? 'active' : 'inactive'}">
+                        ${announcement.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    showAnnouncementForm(announcement = null) {
+        const container = document.getElementById('announcementFormContainer');
+        const form = document.getElementById('announcementForm');
+        const editId = document.getElementById('editAnnouncementId');
+        
+        container.style.display = 'block';
+        
+        if (announcement) {
+            editId.value = announcement.id;
+            document.getElementById('announcementTitle').value = announcement.title;
+            document.getElementById('announcementContent').value = announcement.content;
+        } else {
+            editId.value = '';
+            form.reset();
+        }
+        
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    hideAnnouncementForm() {
+        document.getElementById('announcementFormContainer').style.display = 'none';
+        document.getElementById('announcementForm').reset();
+    }
+
+    async handleAnnouncementSubmit(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('announcementTitle').value;
+        const content = document.getElementById('announcementContent').value;
+        const imageFile = document.getElementById('announcementImage').files[0];
+        const editId = document.getElementById('editAnnouncementId').value;
+        const isEdit = !!editId;
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        submitButton.disabled = true;
+
+        try {
+            let requestData = { title, content };
+            
+            if (imageFile && !isEdit) {
+                // Validate file size (100KB limit)
+                if (imageFile.size > 100 * 1024) {
+                    throw new Error('Image size must not exceed 100KB');
+                }
+                
+                const imageData = await this.fileToBase64(imageFile);
+                requestData.image_data = imageData;
+                requestData.image_name = imageFile.name;
+            }
+
+            const url = isEdit ? `/api/announcements/${editId}` : '/api/announcements';
+            const method = isEdit ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to save announcement');
+            }
+
+            this.showNotification(isEdit ? 'Announcement updated!' : 'Announcement created!', 'success');
+            this.hideAnnouncementForm();
+            await this.loadAnnouncements();
+        } catch (error) {
+            console.error('Error saving announcement:', error);
+            this.showNotification(error.message || 'Failed to save announcement', 'error');
+        } finally {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+
+    async editAnnouncement(announcementId) {
+        const announcement = this.announcements.find(a => a.id === announcementId);
+        if (announcement) {
+            this.showAnnouncementForm(announcement);
+        }
+    }
+
+    async deleteAnnouncement(announcementId) {
+        if (!confirm('Are you sure you want to delete this announcement?')) return;
+
+        try {
+            const response = await fetch(`/api/announcements/${announcementId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) throw new Error('Failed to delete announcement');
+
+            this.showNotification('Announcement deleted successfully!', 'success');
+            await this.loadAnnouncements();
+        } catch (error) {
+            console.error('Error deleting announcement:', error);
+            this.showNotification('Failed to delete announcement', 'error');
+        }
+    }
+
+    // Gallery Management
+    async loadGallery() {
+        const galleryItemsList = document.getElementById('galleryItemsList');
+        
+        galleryItemsList.innerHTML = `
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading gallery...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch('/api/gallery/all');
+            if (!response.ok) throw new Error('Failed to fetch gallery');
+            
+            this.galleryItems = await response.json();
+            this.renderGalleryList();
+        } catch (error) {
+            console.error('Error loading gallery:', error);
+            galleryItemsList.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load gallery.</p>
+                </div>
+            `;
+        }
+    }
+
+    renderGalleryList() {
+        const galleryItemsList = document.getElementById('galleryItemsList');
+        
+        if (this.galleryItems.length === 0) {
+            galleryItemsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <p>No gallery images yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        galleryItemsList.innerHTML = `
+            <div class="gallery-admin-grid">
+                ${this.galleryItems.map(item => `
+                    <div class="gallery-admin-item">
+                        <img src="data:image/jpeg;base64,${item.image_data}" alt="${this.escapeHtml(item.title)}">
+                        <div class="gallery-admin-overlay">
+                            <h5>${this.escapeHtml(item.title)}</h5>
+                            <p>${this.escapeHtml(item.description || '')}</p>
+                            <div class="gallery-admin-actions">
+                                <button class="edit-button" onclick="adminDashboard.editGalleryItem(${item.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="danger-button" onclick="adminDashboard.deleteGalleryItem(${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    showGalleryForm() {
+        const container = document.getElementById('galleryFormContainer');
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    hideGalleryForm() {
+        document.getElementById('galleryFormContainer').style.display = 'none';
+        document.getElementById('galleryForm').reset();
+    }
+
+    async handleGallerySubmit(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('galleryTitle').value;
+        const description = document.getElementById('galleryDescription').value;
+        const imageFile = document.getElementById('galleryImage').files[0];
+
+        if (!imageFile) {
+            this.showNotification('Please select an image', 'error');
+            return;
+        }
+
+        // Validate file size (100KB limit)
+        if (imageFile.size > 100 * 1024) {
+            this.showNotification('Image size must not exceed 100KB', 'error');
+            return;
+        }
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+        submitButton.disabled = true;
+
+        try {
+            const imageData = await this.fileToBase64(imageFile);
+            
+            const response = await fetch('/api/gallery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    image_data: imageData,
+                    image_name: imageFile.name
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to add gallery item');
+            }
+
+            this.showNotification('Image added to gallery!', 'success');
+            this.hideGalleryForm();
+            await this.loadGallery();
+        } catch (error) {
+            console.error('Error adding gallery item:', error);
+            this.showNotification(error.message || 'Failed to add gallery item', 'error');
+        } finally {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+
+    async deleteGalleryItem(itemId) {
+        if (!confirm('Are you sure you want to delete this image?')) return;
+
+        try {
+            const response = await fetch(`/api/gallery/${itemId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) throw new Error('Failed to delete gallery item');
+
+            this.showNotification('Gallery image deleted successfully!', 'success');
+            await this.loadGallery();
+        } catch (error) {
+            console.error('Error deleting gallery item:', error);
+            this.showNotification('Failed to delete gallery item', 'error');
+        }
+    }
+
+    // Helper function to convert file to base64
+    async fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                resolve(base64);
+            };
+            reader.onerror = error => reject(error);
         });
     }
 

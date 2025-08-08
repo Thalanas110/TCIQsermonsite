@@ -56,6 +56,52 @@ async function initializeDatabase() {
       )
     `);
 
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS announcements (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        image_data TEXT,
+        image_name TEXT,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE
+      )
+    `);
+
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS gallery (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT,
+        image_data TEXT NOT NULL,
+        image_name TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE
+      )
+    `);
+
+    // Add missing columns to existing tables
+    try {
+      await db.execute(`
+        ALTER TABLE announcements 
+        ADD COLUMN IF NOT EXISTS image_data TEXT,
+        ADD COLUMN IF NOT EXISTS image_name TEXT
+      `);
+    } catch (error) {
+      console.log('Announcements columns already exist or error adding them:', error.message);
+    }
+
+    try {
+      await db.execute(`
+        ALTER TABLE gallery 
+        ADD COLUMN IF NOT EXISTS image_data TEXT,
+        ADD COLUMN IF NOT EXISTS image_name TEXT
+      `);
+    } catch (error) {
+      console.log('Gallery columns already exist or error adding them:', error.message);
+    }
+
     console.log('Database tables initialized successfully!');
   } catch (error) {
     console.error('Error initializing database:', error);

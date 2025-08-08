@@ -61,6 +61,135 @@
     }
 }
 
+/* Announcements & Gallery Admin Styles */
+.announcement-item, .gallery-form-container, .announcement-form-container {
+    background: var(--surface-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.announcement-header h4 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+}
+
+.announcement-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.announcement-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.announcement-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+}
+
+.status.active {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.status.inactive {
+    color: var(--error);
+    font-weight: 600;
+}
+
+.gallery-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.gallery-admin-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-secondary);
+    aspect-ratio: 1;
+}
+
+.gallery-admin-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-admin-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 20px;
+    transform: translateY(50px);
+    transition: transform 0.3s ease;
+}
+
+.gallery-admin-item:hover .gallery-admin-overlay {
+    transform: translateY(0);
+}
+
+.gallery-admin-overlay h5 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+}
+
+.gallery-admin-overlay p {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.gallery-admin-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.gallery-admin-actions button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .announcement-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .announcement-meta {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+    
+    .gallery-admin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+}
+
 /* Button Components */
 .primary-button {
   background: linear-gradient(135deg, var(--accent-primary), var(--church-gold-light));

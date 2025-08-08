@@ -114,6 +114,18 @@ class DeviceFingerprint {
 
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const context = new AudioContext();
+            let isCleanedUp = false;
+
+            const cleanup = () => {
+                if (!isCleanedUp) {
+                    isCleanedUp = true;
+                    oscillator.stop();
+                    scriptProcessor.disconnect();
+                    if (context.state !== 'closed') {
+                        context.close();
+                    }
+                }
+            };
             
             const oscillator = context.createOscillator();
             const analyser = context.createAnalyser();
@@ -141,17 +153,13 @@ class DeviceFingerprint {
                     }
                     
                     sample = sum;
-                    oscillator.stop();
-                    scriptProcessor.disconnect();
-                    context.close();
+                    cleanup();
                     resolve(sample.toString());
                 };
                 
                 // Fallback timeout
                 setTimeout(() => {
-                    oscillator.stop();
-                    scriptProcessor.disconnect();
-                    context.close();
+                    cleanup();
                     resolve('audio_timeout');
                 }, 1000);
             });

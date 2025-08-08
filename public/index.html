@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCIQ - Church Vlog</title>
+    <title>The Church International - Qatar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <i class="fas fa-church"></i>
-                <span>TCIQ</span>
+                <span>TCI-Q</span>
             </div>
             <div class="nav-menu" id="navMenu">
                 <a href="/" class="nav-link active">Home</a>
@@ -39,14 +39,17 @@
     <section class="hero">
         <div class="hero-background">
             <div class="hero-carousel">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Praise and Worship" class="hero-image active">
+                                <img src="https://images.unsplash.com/photo-1544980919-e83e5e0edc9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Praise and Worship" class="hero-image active">
+                <img src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Church Worship" class="hero-image">
+                <img src="https://images.unsplash.com/photo-1519491050282-cf00c82424b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Worship Stage Lights" class="hero-image">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Praise and Worship" class="hero-image">
                 <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Church Worship" class="hero-image">
-                <img src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1473&q=80" alt="Hands Raised in Worship" class="hero-image">
+                <img src="https://images.unsplash.com/photo-1465056618445-7275e5cd2d60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Worship Stage Lights" class="hero-image">
             </div>
             <div class="hero-overlay"></div>
         </div>
         <div class="hero-content">
-            <h1 class="hero-title">Welcome to Our Church Family</h1>
+            <h1 class="hero-title">Welcome to The Church International - Qatar</h1>
             <p class="hero-subtitle">Watch our latest sermons and join our community</p>
             <button class="cta-button" onclick="scrollToVideos()">
                 <i class="fas fa-play"></i>
@@ -58,6 +61,34 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
+            <!-- Announcements Section -->
+            <section class="announcements-section" id="announcementsSection">
+                <h2 class="section-title">
+                    <i class="fas fa-bullhorn"></i>
+                    Latest Announcements
+                </h2>
+                <div class="announcements-list" id="publicAnnouncementsList">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading announcements...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gallery Section -->
+            <section class="gallery-section" id="gallerySection">
+                <h2 class="section-title">
+                    <i class="fas fa-images"></i>
+                    Photo Gallery
+                </h2>
+                <div class="gallery-grid" id="publicGalleryGrid">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading gallery...</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- Videos Section -->
             <section class="videos-section" id="videosSection">
                 <h2 class="section-title">
@@ -133,7 +164,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>The Church Internatinonal - Qatar</h4>
+                    <h4>The Church International - Qatar</h4>
                     <p>Bringing faith and community together through modern worship and timeless values.</p>
                 </div>
                 <div class="footer-section">
@@ -151,7 +182,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; The Church International - Qatar. All rights reserved.</p>
+                <p>&copy; 2024 The Church International. All rights reserved.</p>
             </div>
         </div>
     </footer>

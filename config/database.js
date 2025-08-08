@@ -1,40 +1,33 @@
-const { drizzle } = require('drizzle-orm/node-postgres');
-const { Pool } = require('pg');
+const { drizzle } = require('drizzle-orm/postgres-js');
+const postgres = require('postgres');
 const { pgTable, serial, text, timestamp, boolean, integer } = require('drizzle-orm/pg-core');
 
 // Get database URL from environment
 const DATABASE_URL = process.env.DATABASE_URL;
 
-// Create the database client
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
+
+// Configure database connection
 let queryClient;
 try {
-  const connectionConfig = {
-    user: 'postgres.lwoexrfrjsbcpgdqavpn',
-    password: 'Dimate101%!',
-    host: 'aws-0-ap-southeast-1.pooler.supabase.com',
-    port: 6543,
-    database: 'postgres',
-    ssl: {
-      rejectUnauthorized: false
-    },
-    max: 1
-  };
-  queryClient = new Pool(connectionConfig);
+  const connectionString = encodeURI(DATABASE_URL);
+  queryClient = postgres(connectionString, {
+    ssl: { rejectUnauthorized: false },
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
 } catch (error) {
   console.error('Database connection error:', error);
-  // Fallback to direct URL
-  queryClient = postgres(DATABASE_URL, {
-    ssl: { rejectUnauthorized: false },
-    port: PORT,
-    max: 1,
-    keepAlive: true
-  });
+  throw error;
 }
 const db = drizzle(queryClient);
 
 // Add a raw query method for database initialization
 db.execute = async (query) => {
-  return await queryClient.query(query);
+  return await queryClient.unsafe(query);
 };
 
 // Define database schema
@@ -81,10 +74,33 @@ const church_info = pgTable('church_info', {
   updated_at: timestamp('updated_at').defaultNow().notNull()
 });
 
+const announcements = pgTable('announcements', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  image_data: text('image_data'),
+  image_name: text('image_name'),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  is_active: boolean('is_active').default(true)
+});
+
+const gallery = pgTable('gallery', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  image_data: text('image_data').notNull(),
+  image_name: text('image_name').notNull(),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  is_active: boolean('is_active').default(true)
+});
+
 module.exports = {
   db,
   videos,
   comments,
   banned_devices,
-  church_info
+  church_info,
+  announcements,
+  gallery
 };

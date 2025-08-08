@@ -2,7 +2,14 @@ const express = require('express');
 const { db, comments, banned_devices } = require('../config/database');
 const { eq, and, desc } = require('drizzle-orm');
 const { generateFingerprint } = require('../utils/fingerprint');
-const authMiddleware = require('../middleware/auth');
+
+// Authentication middleware
+const checkAdmin = (req, res, next) => {
+    if (!req.session || !req.session.isAdmin) {
+        return res.status(401).json({ error: 'Unauthorized access' });
+    }
+    next();
+};
 
 const router = express.Router();
 
@@ -55,7 +62,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get all comments (admin only)
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', checkAdmin, async (req, res) => {
   try {
     const allComments = await db.select().from(comments)
       .orderBy(desc(comments.created_at));
@@ -68,7 +75,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Delete comment (admin only)
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', checkAdmin, async (req, res) => {
   try {
     const commentId = parseInt(req.params.id);
 
@@ -88,7 +95,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 });
 
 // Ban device (admin only)
-router.post('/ban', authMiddleware, async (req, res) => {
+router.post('/ban', checkAdmin, async (req, res) => {
   try {
     const { device_fingerprint, reason } = req.body;
 
@@ -111,7 +118,7 @@ router.post('/ban', authMiddleware, async (req, res) => {
 });
 
 // Unban device (admin only)
-router.post('/unban', authMiddleware, async (req, res) => {
+router.post('/unban', checkAdmin, async (req, res) => {
   try {
     const { device_fingerprint } = req.body;
 
@@ -132,7 +139,7 @@ router.post('/unban', authMiddleware, async (req, res) => {
 });
 
 // Get banned devices (admin only)
-router.get('/banned', authMiddleware, async (req, res) => {
+router.get('/banned', checkAdmin, async (req, res) => {
   try {
     const bannedDevices = await db.select().from(banned_devices)
       .orderBy(desc(banned_devices.banned_at));

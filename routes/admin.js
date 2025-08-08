@@ -14,15 +14,46 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    console.log('Login attempt:', { 
+      providedUsername: username,
+      expectedUsername: ADMIN_USERNAME,
+      usernameMatch: username === ADMIN_USERNAME,
+      passwordMatch: password === ADMIN_PASSWORD
+    });
+
+    const expectedUsername = ADMIN_USERNAME;
+    const expectedPassword = ADMIN_PASSWORD;
+    
+    console.log('Password check:', {
+      expected: expectedPassword,
+      received: password,
+      match: expectedPassword === password
+    });
+
+    if (username === expectedUsername && password === expectedPassword) {
+      // Set session
       req.session.isAdmin = true;
-      res.json({ message: 'Login successful', isAdmin: true });
+      req.session.username = username;
+      
+      // Save session before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: 'Failed to create session' });
+        }
+        res.json({ message: 'Login successful', isAdmin: true });
+      });
     } else {
-      res.status(401).json({ error: 'Invalid credentials' });
+      res.status(401).json({ error: 'Invalid username or password' });
     }
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -66,7 +97,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
     res.json({
       totalVideos: videoCount.count,
       totalComments: commentCount.count,
-      totalViews: totalViews.total,
+      totalViews: totalViews.total || 0,
       recentVideos: recentVideos.count,
       recentComments: recentComments.count
     });

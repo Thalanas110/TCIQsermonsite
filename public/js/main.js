@@ -10,6 +10,8 @@ class ChurchVlogApp {
     async init() {
         this.bindEvents();
         await this.loadVideos();
+        await this.loadAnnouncements();
+        await this.loadGallery();
         this.setupModal();
         this.initImageCarousel();
     }
@@ -254,6 +256,98 @@ class ChurchVlogApp {
 
         // Rotate images every 4 seconds
         setInterval(showNextImage, 4000);
+    }
+
+    async loadAnnouncements() {
+        const announcementsList = document.getElementById('publicAnnouncementsList');
+        
+        try {
+            const response = await fetch('/api/announcements');
+            if (!response.ok) throw new Error('Failed to fetch announcements');
+            
+            const announcements = await response.json();
+            this.renderAnnouncements(announcements);
+        } catch (error) {
+            console.error('Error loading announcements:', error);
+            announcementsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bullhorn"></i>
+                    <p>No announcements at this time.</p>
+                </div>
+            `;
+        }
+    }
+
+    renderAnnouncements(announcements) {
+        const announcementsList = document.getElementById('publicAnnouncementsList');
+        
+        if (announcements.length === 0) {
+            announcementsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bullhorn"></i>
+                    <p>No announcements at this time.</p>
+                </div>
+            `;
+            return;
+        }
+
+        announcementsList.innerHTML = announcements.slice(0, 3).map(announcement => `
+            <div class="announcement-card">
+                <div class="announcement-content">
+                    <h3>${this.escapeHtml(announcement.title)}</h3>
+                    <p>${this.escapeHtml(announcement.content)}</p>
+                    ${announcement.image_data ? `<img src="data:image/jpeg;base64,${announcement.image_data}" alt="${this.escapeHtml(announcement.title)}">` : ''}
+                </div>
+                <div class="announcement-date">
+                    <i class="fas fa-calendar"></i>
+                    ${this.formatDate(announcement.created_at)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async loadGallery() {
+        const galleryGrid = document.getElementById('publicGalleryGrid');
+        
+        try {
+            const response = await fetch('/api/gallery');
+            if (!response.ok) throw new Error('Failed to fetch gallery');
+            
+            const galleryItems = await response.json();
+            this.renderGallery(galleryItems);
+        } catch (error) {
+            console.error('Error loading gallery:', error);
+            galleryGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <p>No gallery images available yet.</p>
+                </div>
+            `;
+        }
+    }
+
+    renderGallery(galleryItems) {
+        const galleryGrid = document.getElementById('publicGalleryGrid');
+        
+        if (galleryItems.length === 0) {
+            galleryGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <p>No gallery images available yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        galleryGrid.innerHTML = galleryItems.map(item => `
+            <div class="gallery-item" onclick="this.openGalleryModal('${item.id}')">
+                <img src="data:image/jpeg;base64,${item.image_data}" alt="${this.escapeHtml(item.title)}" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>${this.escapeHtml(item.title)}</h4>
+                    ${item.description ? `<p>${this.escapeHtml(item.description)}</p>` : ''}
+                </div>
+            </div>
+        `).join('');
     }
 }
 
