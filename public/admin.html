@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TCIQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-church"></i>
+                <span>TCIQ</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/information" class="nav-link">Information</a>
+                <a href="/admin" class="nav-link active">Admin</a>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+            <div class="nav-hamburger" id="navHamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Admin Login</h2>
+                <p>Enter your credentials to access the admin dashboard</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+            </form>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="container">
+                <h1>Admin Dashboard</h1>
+                <button class="logout-button" id="logoutButton">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <div class="container">
+                <!-- Sidebar Navigation -->
+                <div class="dashboard-layout">
+                    <aside class="dashboard-sidebar">
+                        <nav class="sidebar-nav">
+                            <button class="sidebar-link active" data-section="overview">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Overview
+                            </button>
+                            <button class="sidebar-link" data-section="videos">
+                                <i class="fas fa-video"></i>
+                                Manage Videos
+                            </button>
+                            <button class="sidebar-link" data-section="comments">
+                                <i class="fas fa-comments"></i>
+                                Manage Comments
+                            </button>
+                            <button class="sidebar-link" data-section="bans">
+                                <i class="fas fa-ban"></i>
+                                Banned Users
+                            </button>
+                            <button class="sidebar-link" data-section="church-info">
+                                <i class="fas fa-church"></i>
+                                Church Information
+                            </button>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Dashboard Content -->
+                    <main class="dashboard-main">
+                        <!-- Overview Section -->
+                        <section class="dashboard-section active" id="overview">
+                            <h2>Dashboard Overview</h2>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="totalVideos">0</h3>
+                                        <p>Total Videos</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="totalComments">0</h3>
+                                        <p>Total Comments</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="totalViews">0</h3>
+                                        <p>Total Views</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 id="recentActivity">0</h3>
+                                        <p>Recent Videos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dashboard Charts -->
+                            <div class="charts-section">
+                                <h3>Visual Analytics</h3>
+                                <div class="charts-grid">
+                                    <div class="chart-card">
+                                        <h4>Content Overview</h4>
+                                        <canvas id="overviewChart"></canvas>
+                                    </div>
+                                    <div class="chart-card">
+                                        <h4>Recent Activity (Last 7 Days)</h4>
+                                        <canvas id="activityChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Videos Management Section -->
+                        <section class="dashboard-section" id="videos">
+                            <div class="section-header">
+                                <h2>Manage Videos</h2>
+                                <button class="primary-button" id="addVideoButton">
+                                    <i class="fas fa-plus"></i>
+                                    Add New Video
+                                </button>
+                            </div>
+
+                            <!-- Add/Edit Video Form -->
+                            <div class="video-form-container" id="videoFormContainer" style="display: none;">
+                                <form class="video-form" id="videoForm">
+                                    <input type="hidden" id="editVideoId">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="videoTitle">Video Title</label>
+                                            <input type="text" id="videoTitle" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="videoType">Video Type</label>
+                                            <select id="videoType" required>
+                                                <option value="">Select Type</option>
+                                                <option value="youtube">YouTube Link</option>
+                                                <option value="mp4">MP4 Upload</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="videoDescription">Description</label>
+                                        <textarea id="videoDescription" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group" id="youtubeUrlGroup" style="display: none;">
+                                        <label for="youtubeUrl">YouTube URL</label>
+                                        <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                                    </div>
+                                    <div class="form-group" id="mp4FileGroup" style="display: none;">
+                                        <label for="mp4File">MP4 File</label>
+                                        <input type="file" id="mp4File" accept="video/mp4">
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="primary-button">
+                                            <i class="fas fa-save"></i>
+                                            Save Video
+                                        </button>
+                                        <button type="button" class="secondary-button" id="cancelVideoForm">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Videos List -->
+                            <div class="videos-list" id="videosList">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading videos...</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Comments Management Section -->
+                        <section class="dashboard-section" id="comments">
+                            <h2>Manage Comments</h2>
+                            <div class="comments-list" id="commentsList">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading comments...</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Banned Users Section -->
+                        <section class="dashboard-section" id="bans">
+                            <h2>Banned Users</h2>
+                            <div class="banned-users-list" id="bannedUsersList">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading banned users...</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Church Information Section -->
+                        <section class="dashboard-section" id="church-info">
+                            <h2>Church Information</h2>
+                            <form class="church-info-form" id="churchInfoForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="churchName">Church Name</label>
+                                        <input type="text" id="churchName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pastorName">Pastor Name</label>
+                                        <input type="text" id="pastorName" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="churchMission">Mission Statement</label>
+                                    <textarea id="churchMission" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="churchDescription">Description</label>
+                                    <textarea id="churchDescription" rows="4"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="churchAddress">Address</label>
+                                        <textarea id="churchAddress" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="churchPhone">Phone</label>
+                                        <input type="tel" id="churchPhone">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="churchEmail">Email</label>
+                                        <input type="email" id="churchEmail">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="serviceTimes">Service Times</label>
+                                        <textarea id="serviceTimes" rows="3" placeholder="Sunday: 9:00 AM & 11:00 AM&#10;Wednesday: 7:00 PM"></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="primary-button">
+                                    <i class="fas fa-save"></i>
+                                    Update Church Information
+                                </button>
+                            </form>
+                        </section>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/theme.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

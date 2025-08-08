@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Information - TCIQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body class="dark-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-church"></i>
+                <span>TCIQ</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/information" class="nav-link active">Information</a>
+                <a href="/admin" class="nav-link">Admin</a>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+            <div class="nav-hamburger" id="navHamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="hero-background">
+            <img src="https://pixabay.com/get/g892efa2c338928be8d922c7ec06c60c99e04eb3adaa17402a92079c8b2e8d59810963cfd6b08e642ab5a23657b9e08c23956c7c6fe3a95b6b2fa9de08fcd544c_1280.jpg" alt="Church Community" class="hero-image">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="page-header-content">
+            <h1>Church Information</h1>
+            <p>Learn more about our church family and mission</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="church-info-grid">
+                <!-- About Section -->
+                <section class="info-card">
+                    <div class="card-header">
+                        <i class="fas fa-church"></i>
+                        <h2>About Our Church</h2>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="churchName">The Church of Inspiration and Quantum</h3>
+                        <p id="churchDescription">
+                            Welcome to our church family! We are a community of believers dedicated to worship, fellowship, and service to others.
+                        </p>
+                        <div class="mission-statement">
+                            <h4>Our Mission</h4>
+                            <p id="churchMission">
+                                Bringing faith and community together through modern worship and timeless values.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pastor Section -->
+                <section class="info-card">
+                    <div class="card-header">
+                        <i class="fas fa-user-tie"></i>
+                        <h2>Our Pastor</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="pastor-info">
+                            <img src="https://pixabay.com/get/gf95a63a6991788e21411702204748c1364fdca9acb6c47abb1e46b09f543872f67662eeead5b144464719045b62fd1131873cd6ec530adb6f116d53fd5591c59_1280.jpg" alt="Pastor" class="pastor-image">
+                            <div>
+                                <h3 id="pastorName">Pastor John Smith</h3>
+                                <p>Leading our congregation with wisdom, compassion, and dedication to God's word.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Service Times Section -->
+                <section class="info-card">
+                    <div class="card-header">
+                        <i class="fas fa-clock"></i>
+                        <h2>Service Times</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="service-times" id="serviceTimes">
+                            <div class="service-item">
+                                <strong>Sunday Morning Worship</strong>
+                                <span>9:00 AM & 11:00 AM</span>
+                            </div>
+                            <div class="service-item">
+                                <strong>Wednesday Evening Service</strong>
+                                <span>7:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Information -->
+                <section class="info-card">
+                    <div class="card-header">
+                        <i class="fas fa-address-book"></i>
+                        <h2>Contact Information</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Address</strong>
+                                    <p id="churchAddress">123 Faith Street, Community City, CC 12345</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Phone</strong>
+                                    <p id="churchPhone">(555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p id="churchEmail">info@tciq.church</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Location Map -->
+                <section class="info-card full-width">
+                    <div class="card-header">
+                        <i class="fas fa-map"></i>
+                        <h2>Find Us</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="map-container">
+                            <div class="map-placeholder">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <p>Interactive map coming soon</p>
+                                <p>Visit us at <span id="mapAddress">123 Faith Street, Community City, CC 12345</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Community Gallery -->
+                <section class="info-card full-width">
+                    <div class="card-header">
+                        <i class="fas fa-images"></i>
+                        <h2>Our Community</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="gallery-grid">
+                            <div class="gallery-item">
+                                <img src="https://pixabay.com/get/g19f27ae6d6665ef093964663986e560ee7343197bf724b782699380b887a161a86bbcd97fa9a13c340adda4ff0deb7cbefa28802c2b0885364532461d4eacd63_1280.jpg" alt="Church Interior">
+                                <div class="gallery-overlay">
+                                    <span>Worship Sanctuary</span>
+                                </div>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="https://pixabay.com/get/gbc8fd43a38d9b22eb544930d854ccd64adbc4dacb59ea2cf0379d16a16c876124c80ddac61b88d8e825ca641af6b401168b2caa297b23db7f548fa8466b67d1e_1280.jpg" alt="Community Gathering">
+                                <div class="gallery-overlay">
+                                    <span>Fellowship Hall</span>
+                                </div>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="https://pixabay.com/get/g7284207622570d6590d30fb2161158a09a2395ab8f2fe8b7039b1c45144c7fae424c426b5492ed70fae5ea6e09c1c0bb7a206389d8709ca30674e8eabb82765a_1280.jpg" alt="Prayer Space">
+                                <div class="gallery-overlay">
+                                    <span>Prayer Chapel</span>
+                                </div>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="https://pixabay.com/get/g991f43deec23eb60c1d944ad81b470304b23094048d7468a72fd53f0e1e08b550b9bebd1f28ec3f1ccc027c5b49c5cdc2b45ab0506ce4c23495d4ca70083ea10_1280.jpg" alt="Modern Church">
+                                <div class="gallery-overlay">
+                                    <span>Modern Sanctuary</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>The Church of Inspiration and Quantum</h4>
+                    <p>Bringing faith and community together through modern worship and timeless values.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/information">Church Information</a></li>
+                        <li><a href="/admin">Admin</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-phone"></i> <span id="footerPhone">(555) 123-4567</span></p>
+                    <p><i class="fas fa-envelope"></i> <span id="footerEmail">info@tciq.church</span></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 The Church of Inspiration and Quantum. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/theme.js"></script>
+    <script>
+        // Load church information when page loads
+        document.addEventListener('DOMContentLoaded', loadChurchInfo);
+
+        async function loadChurchInfo() {
+            try {
+                const response = await fetch('/api/church');
+                if (!response.ok) throw new Error('Failed to fetch church info');
+                
+                const churchInfo = await response.json();
+                
+                // Update page content with church information
+                document.getElementById('churchName').textContent = churchInfo.name || 'The Church of Inspiration and Quantum';
+                document.getElementById('churchDescription').textContent = churchInfo.description || 'Welcome to our church family!';
+                document.getElementById('churchMission').textContent = churchInfo.mission || 'Bringing faith and community together.';
+                document.getElementById('pastorName').textContent = churchInfo.pastor || 'Pastor John Smith';
+                document.getElementById('churchAddress').textContent = churchInfo.address || '123 Faith Street, Community City, CC 12345';
+                document.getElementById('churchPhone').textContent = churchInfo.phone || '(555) 123-4567';
+                document.getElementById('churchEmail').textContent = churchInfo.email || 'info@tciq.church';
+                document.getElementById('mapAddress').textContent = churchInfo.address || '123 Faith Street, Community City, CC 12345';
+                
+                // Update footer
+                document.getElementById('footerPhone').textContent = churchInfo.phone || '(555) 123-4567';
+                document.getElementById('footerEmail').textContent = churchInfo.email || 'info@tciq.church';
+                
+                // Parse and display service times
+                if (churchInfo.service_times) {
+                    const serviceTimesContainer = document.getElementById('serviceTimes');
+                    serviceTimesContainer.innerHTML = '';
+                    
+                    const lines = churchInfo.service_times.split('\n');
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const serviceItem = document.createElement('div');
+                            serviceItem.className = 'service-item';
+                            
+                            const parts = line.split(':');
+                            if (parts.length === 2) {
+                                serviceItem.innerHTML = `
+                                    <strong>${parts[0].trim()}</strong>
+                                    <span>${parts[1].trim()}</span>
+                                `;
+                            } else {
+                                serviceItem.innerHTML = `<span>${line.trim()}</span>`;
+                            }
+                            
+                            serviceTimesContainer.appendChild(serviceItem);
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error loading church information:', error);
+            }
+        }
+    </script>
+</body>
+</html>
