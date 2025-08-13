@@ -548,6 +548,9 @@ select:focus {
 .announcement-content {
   color: var(--text-secondary);
   line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Gallery Section Styles */
