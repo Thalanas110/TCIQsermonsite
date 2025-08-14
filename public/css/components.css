@@ -501,6 +501,73 @@
   padding: 20px;
 }
 
+/* Session timeout warnings */
+.inactivity-warning,
+.logout-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2100;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
+    border: 1px solid var(--border-color);
+}
+
+.warning-content,
+.message-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.inactivity-warning i {
+    color: #f6a434;
+    font-size: 24px;
+}
+
+.logout-message i {
+    color: var(--text-tertiary);
+    font-size: 24px;
+}
+
+.inactivity-warning p,
+.logout-message p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.inactivity-warning button {
+    background: var(--accent-primary);
+    color: var(--dark-bg-primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-left: auto;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.inactivity-warning button:hover {
+    filter: brightness(1.1);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 .video-container {
   position: relative;
   width: 100%;

@@ -24,11 +24,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Session middleware
 app.use(session({
   secret: process.env.SESSION_SECRET || 'church_vlog_secret_key_2024',
-  resave: false,
+  resave: true,
+  rolling: true,
   saveUninitialized: false,
   cookie: { 
     secure: false, // Set to true in production with HTTPS
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 5 * 60 * 1000 // 5 minutes
   }
 }));
 

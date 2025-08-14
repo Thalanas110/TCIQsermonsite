@@ -11,6 +11,8 @@ class AdminDashboard {
         this.galleryItems = [];
         this.overviewChart = null;
         this.activityChart = null;
+        this.inactivityTimeout = null;
+        this.inactivityWarningTimeout = null;
         this.init();
     }
 
@@ -21,9 +23,61 @@ class AdminDashboard {
         if (this.isLoggedIn) {
             this.showDashboard();
             await this.loadDashboardData();
+            this.resetInactivityTimer();
         } else {
             this.showLogin();
         }
+    }
+
+    resetInactivityTimer() {
+        if (!this.isLoggedIn) return;
+
+        // Clear existing timeouts
+        if (this.inactivityTimeout) clearTimeout(this.inactivityTimeout);
+        if (this.inactivityWarningTimeout) clearTimeout(this.inactivityWarningTimeout);
+
+        // Set warning timeout (4 minutes)
+        this.inactivityWarningTimeout = setTimeout(() => {
+            this.showInactivityWarning();
+        }, 4 * 60 * 1000);
+
+        // Set logout timeout (5 minutes)
+        this.inactivityTimeout = setTimeout(() => {
+            this.handleInactivityLogout();
+        }, 5 * 60 * 1000);
+    }
+
+    showInactivityWarning() {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'inactivity-warning';
+        warningDiv.innerHTML = `
+            <div class="warning-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Your session will expire in 1 minute due to inactivity.</p>
+                <button onclick="window.adminDashboard.resetInactivityTimer(); this.parentElement.parentElement.remove();">
+                    Keep Session Active
+                </button>
+            </div>
+        `;
+        document.body.appendChild(warningDiv);
+    }
+
+    async handleInactivityLogout() {
+        await this.handleLogout();
+        const warningDiv = document.querySelector('.inactivity-warning');
+        if (warningDiv) warningDiv.remove();
+        
+        // Show message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'logout-message';
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <i class="fas fa-clock"></i>
+                <p>You have been logged out due to inactivity.</p>
+            </div>
+        `;
+        document.body.appendChild(messageDiv);
+        setTimeout(() => messageDiv.remove(), 5000);
     }
 
     bindEvents() {
@@ -39,6 +93,11 @@ class AdminDashboard {
             logoutButton.addEventListener('click', () => this.handleLogout());
         }
 
+        // Activity tracking for session timeout
+        ['mousedown', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, () => this.resetInactivityTimer());
+        });
+
         // Sidebar navigation
         document.addEventListener('click', (e) => {
             if (e.target.matches('.sidebar-link')) {
@@ -46,6 +105,15 @@ class AdminDashboard {
                 this.switchSection(section);
             }
         });
+
+        // Activity tracking
+        const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+        activityEvents.forEach(event => {
+            document.addEventListener(event, () => this.resetInactivityTimer());
+        });
+
+        // Check session status periodically
+        setInterval(() => this.checkAuthStatus(), 30000); // Check every 30 seconds
 
         // Video management
         const addVideoButton = document.getElementById('addVideoButton');
@@ -131,16 +199,12 @@ class AdminDashboard {
     async handleLogin(e) {
         e.preventDefault();
         
-        const username = document.getElementById('username').value.trim();
+        const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const loginError = document.getElementById('loginError');
         const submitButton = e.target.querySelector('button[type="submit"]');
         
-        // Clear any previous error
         loginError.textContent = '';
-        loginError.style.display = 'none';
-        
-        // Show loading state
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
         submitButton.disabled = true;
 
@@ -150,11 +214,7 @@ class AdminDashboard {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    username: username,
-                    password: password 
-                }),
-                credentials: 'include' // Important for session cookie
+                body: JSON.stringify({ username, password }),
             });
 
             const data = await response.json();
