@@ -2,7 +2,7 @@ const express = require('express');
 const { db, videos, comments, church_info } = require('../config/database');
 const { count, sql } = require('drizzle-orm');
 const authMiddleware = require('../middleware/auth');
-const { logSystemEvent } = require('../utils/logger');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
@@ -20,43 +20,47 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    console.log('Login attempt:', { 
-      providedUsername: username,
-      expectedUsername: ADMIN_USERNAME,
-      usernameMatch: username === ADMIN_USERNAME,
-      passwordMatch: password === ADMIN_PASSWORD
-    });
-
     const expectedUsername = ADMIN_USERNAME;
     const expectedPassword = ADMIN_PASSWORD;
-    
-    console.log('Password check:', {
-      expected: expectedPassword,
-      received: password,
-      match: expectedPassword === password
+
+    logger.debug(logger.categories.AUTH, 'Login attempt received', {
+      providedUsername: username,
+      usernameMatch: username === expectedUsername
     });
 
     if (username === expectedUsername && password === expectedPassword) {
+      logger.info(logger.categories.AUTH, 'Successful admin login', {
+        username: username,
+        timestamp: new Date()
+      });
       // Set session
       req.session.isAdmin = true;
       req.session.username = username;
       
       // Save session before responding
-      req.session.save(async (err) => {
+      req.session.save((err) => {
         if (err) {
-          console.error('Session save error:', err);
-          await logSystemEvent('error', 'auth', 'Failed to create session', { error: err.message });
+          logger.error(logger.categories.AUTH, 'Failed to create session', {
+            error: err.message,
+            username: username
+          });
           return res.status(500).json({ error: 'Failed to create session' });
         }
-        await logSystemEvent('info', 'auth', 'Admin login successful', { username });
         res.json({ message: 'Login successful', isAdmin: true });
       });
     } else {
-      await logSystemEvent('warning', 'auth', 'Failed login attempt', { username, ip: req.ip });
+      logger.warning(logger.categories.AUTH, 'Failed login attempt', {
+        username: username,
+        ip: req.ip,
+        timestamp: new Date()
+      });
       res.status(401).json({ error: 'Invalid username or password' });
     }
   } catch (error) {
-    console.error('Error during login:', error);
+    logger.error(logger.categories.SYSTEM, 'Unexpected error during login', {
+      error: error.message,
+      stack: error.stack
+    });
     res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
@@ -68,10 +72,19 @@ router.get('/auth-status', (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
+  const username = req.session.username;
   req.session.destroy((err) => {
     if (err) {
+      logger.error(logger.categories.AUTH, 'Logout failed', {
+        error: err.message,
+        username: username
+      });
       return res.status(500).json({ error: 'Logout failed' });
     }
+    logger.info(logger.categories.AUTH, 'Admin logout successful', {
+      username: username,
+      timestamp: new Date()
+    });
     res.json({ message: 'Logout successful' });
   });
 });

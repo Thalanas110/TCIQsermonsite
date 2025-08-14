@@ -4,6 +4,7 @@ class ChurchVlogApp {
         this.videos = [];
         this.currentVideo = null;
         this.modal = null;
+        this.sessionTimeout = null;
         this.init();
     }
 
@@ -14,6 +15,7 @@ class ChurchVlogApp {
         await this.loadGallery();
         this.setupModal();
         this.initImageCarousel();
+        this.initSessionTimeout();
     }
 
     bindEvents() {
