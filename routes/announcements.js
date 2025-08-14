@@ -2,6 +2,7 @@ const express = require('express');
 const { db, announcements } = require('../config/database');
 const { desc, eq } = require('drizzle-orm');
 const authMiddleware = require('../middleware/auth');
+const { logSystemEvent } = require('../utils/logger');
 
 const router = express.Router();
 
@@ -62,9 +63,19 @@ router.post('/', authMiddleware, async (req, res) => {
       })
       .returning();
 
+    await logSystemEvent('info', 'content', 'Announcement created', {
+      id: newAnnouncement.id,
+      title: newAnnouncement.title,
+      admin: req.session.username
+    });
+
     res.status(201).json(newAnnouncement);
   } catch (error) {
     console.error('Error creating announcement:', error);
+    await logSystemEvent('error', 'content', 'Failed to create announcement', {
+      error: error.message,
+      admin: req.session.username
+    });
     res.status(500).json({ error: 'Failed to create announcement' });
   }
 });
@@ -86,12 +97,28 @@ router.put('/:id', authMiddleware, async (req, res) => {
       .returning();
 
     if (!updatedAnnouncement) {
+      await logSystemEvent('warning', 'content', 'Attempted to update non-existent announcement', {
+        id,
+        admin: req.session.username
+      });
       return res.status(404).json({ error: 'Announcement not found' });
     }
+
+    await logSystemEvent('info', 'content', 'Announcement updated', {
+      id: updatedAnnouncement.id,
+      title: updatedAnnouncement.title,
+      admin: req.session.username,
+      changes: { title, content, is_active }
+    });
 
     res.json(updatedAnnouncement);
   } catch (error) {
     console.error('Error updating announcement:', error);
+    await logSystemEvent('error', 'content', 'Failed to update announcement', {
+      error: error.message,
+      id,
+      admin: req.session.username
+    });
     res.status(500).json({ error: 'Failed to update announcement' });
   }
 });
@@ -106,8 +133,18 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       .returning();
 
     if (!deletedAnnouncement) {
+      await logSystemEvent('warning', 'content', 'Attempted to delete non-existent announcement', {
+        id,
+        admin: req.session.username
+      });
       return res.status(404).json({ error: 'Announcement not found' });
     }
+
+    await logSystemEvent('info', 'content', 'Announcement deleted', {
+      id: deletedAnnouncement.id,
+      title: deletedAnnouncement.title,
+      admin: req.session.username
+    });
 
     res.json({ message: 'Announcement deleted successfully' });
   } catch (error) {

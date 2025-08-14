@@ -99,6 +99,10 @@
                                 <i class="fas fa-ban"></i>
                                 Banned Users
                             </button>
+                            <button class="sidebar-link" data-section="logs">
+                                <i class="fas fa-clipboard-list"></i>
+                                System Logs
+                            </button>
                             <button class="sidebar-link" data-section="announcements">
                                 <i class="fas fa-bullhorn"></i>
                                 Announcements
@@ -348,6 +352,48 @@
                                 <div class="loading-spinner">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <p>Loading banned users...</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- System Logs Section -->
+                        <section class="dashboard-section" id="logs">
+                            <h2>System Logs</h2>
+                            <div class="logs-controls">
+                                <div class="logs-filters">
+                                    <select id="logLevel" class="log-filter">
+                                        <option value="all">All Levels</option>
+                                        <option value="info">Info</option>
+                                        <option value="warning">Warning</option>
+                                        <option value="error">Error</option>
+                                        <option value="security">Security</option>
+                                    </select>
+                                    <select id="logCategory" class="log-filter">
+                                        <option value="all">All Categories</option>
+                                        <option value="auth">Authentication</option>
+                                        <option value="admin">Admin Actions</option>
+                                        <option value="content">Content Changes</option>
+                                        <option value="system">System Events</option>
+                                    </select>
+                                    <input type="date" id="logDate" class="log-filter">
+                                </div>
+                                <div class="logs-actions">
+                                    <button class="secondary-button" id="refreshLogs">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Refresh
+                                    </button>
+                                    <button class="secondary-button" id="downloadLogs">
+                                        <i class="fas fa-download"></i>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="logs-container">
+                                <div class="logs-list" id="logsList">
+                                    <div class="loading-spinner">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Loading logs...</p>
+                                    </div>
                                 </div>
                             </div>
                         </section>

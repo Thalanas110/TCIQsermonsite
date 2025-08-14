@@ -2,6 +2,7 @@ const express = require('express');
 const { db, videos, comments, church_info } = require('../config/database');
 const { count, sql } = require('drizzle-orm');
 const authMiddleware = require('../middleware/auth');
+const { logSystemEvent } = require('../utils/logger');
 
 const router = express.Router();
 
@@ -41,14 +42,17 @@ router.post('/login', async (req, res) => {
       req.session.username = username;
       
       // Save session before responding
-      req.session.save((err) => {
+      req.session.save(async (err) => {
         if (err) {
           console.error('Session save error:', err);
+          await logSystemEvent('error', 'auth', 'Failed to create session', { error: err.message });
           return res.status(500).json({ error: 'Failed to create session' });
         }
+        await logSystemEvent('info', 'auth', 'Admin login successful', { username });
         res.json({ message: 'Login successful', isAdmin: true });
       });
     } else {
+      await logSystemEvent('warning', 'auth', 'Failed login attempt', { username, ip: req.ip });
       res.status(401).json({ error: 'Invalid username or password' });
     }
   } catch (error) {

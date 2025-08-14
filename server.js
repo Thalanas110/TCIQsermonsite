@@ -12,6 +12,7 @@ const adminRouter = require('./routes/admin');
 const churchRouter = require('./routes/church');
 const announcementsRouter = require('./routes/announcements');
 const galleryRouter = require('./routes/gallery');
+const logsRouter = require('./routes/logs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -48,6 +49,7 @@ app.use('/api/comments', commentsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/church', churchRouter);
 app.use('/api/announcements', announcementsRouter);
+app.use('/api/admin/logs', logsRouter);
 app.use('/api/gallery', galleryRouter);
 
 // Serve HTML files

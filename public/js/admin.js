@@ -98,6 +98,9 @@ class AdminDashboard {
             document.addEventListener(event, () => this.resetInactivityTimer());
         });
 
+        // Initialize logs section listeners
+        this.initLogsListeners();
+
         // Sidebar navigation
         document.addEventListener('click', (e) => {
             if (e.target.matches('.sidebar-link')) {
@@ -1281,6 +1284,74 @@ class AdminDashboard {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Logs Management
+    async loadLogs() {
+        const logsList = document.getElementById('logsList');
+        const level = document.getElementById('logLevel').value;
+        const category = document.getElementById('logCategory').value;
+        const date = document.getElementById('logDate').value;
+
+        logsList.innerHTML = `
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading logs...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch(`/api/admin/logs?level=${level}&category=${category}&date=${date}`);
+            if (!response.ok) throw new Error('Failed to fetch logs');
+            
+            const logs = await response.json();
+            
+            if (logs.length === 0) {
+                logsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No logs found for the selected filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            logsList.innerHTML = logs.map(log => `
+                <div class="log-entry">
+                    <span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
+                    <div class="log-content">
+                        <div class="log-message">${this.escapeHtml(log.message)}</div>
+                        ${log.details ? `<div class="log-details">${this.escapeHtml(log.details)}</div>` : ''}
+                    </div>
+                    <span class="log-level ${log.level.toLowerCase()}">${log.level}</span>
+                </div>
+            `).join('');
+
+        } catch (error) {
+            console.error('Error loading logs:', error);
+            logsList.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Failed to load logs. Please try again.</p>
+                </div>
+            `;
+        }
+    }
+
+    downloadLogs() {
+        const level = document.getElementById('logLevel').value;
+        const category = document.getElementById('logCategory').value;
+        const date = document.getElementById('logDate').value;
+        
+        window.location.href = `/api/admin/logs/download?level=${level}&category=${category}&date=${date}`;
+    }
+
+    initLogsListeners() {
+        document.getElementById('logLevel')?.addEventListener('change', () => this.loadLogs());
+        document.getElementById('logCategory')?.addEventListener('change', () => this.loadLogs());
+        document.getElementById('logDate')?.addEventListener('change', () => this.loadLogs());
+        document.getElementById('refreshLogs')?.addEventListener('click', () => this.loadLogs());
+        document.getElementById('downloadLogs')?.addEventListener('click', () => this.downloadLogs());
     }
 }
 
